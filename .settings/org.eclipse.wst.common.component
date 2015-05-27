@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
-    <wb-module deploy-name="ej15_github">
+    <wb-module deploy-name="Ej_15_Github">
+        <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
-        <property name="context-root" value="ej15_github"/>
-        <property name="java-output-path" value="/ej15_github/bin"/>
+        <property name="java-output-path" value="/Ej_15_Github/bin"/>
+        <property name="context-root" value="Ej_15_Github"/>
     </wb-module>
 </project-modules>
