@@ -43,6 +43,11 @@ public class TiendaServlet extends HttpServlet {
 		String action = request.getPathInfo().substring(1);
 		request.setCharacterEncoding("UTF-8");
 		String titulo ="Sin título";
+		
+		RequestDispatcher rd;
+				// de alguna manera hay que enviarle a la vista 
+				//el resultado de la consulta a la base de datos... 
+				
 		switch(action){
 			case "listarTodos": // se invocara al controlador adecuado
 							// esta peticion redirige a otra pagina
@@ -50,23 +55,20 @@ public class TiendaServlet extends HttpServlet {
 				ArrayList<Cliente> clientes = todos.listarTodos();
 				request.setAttribute("clientes", clientes);
 				titulo="Listado general de clientes";
+				request.setAttribute("titulo", titulo);
+				rd = request.getRequestDispatcher("/jsp/listarTodos.jsp");
+				rd.forward(request, response);				
 				break;
 			case "buscarPorNombre": // se invocara al controlador que haga la consulta
 									// por nombre que obtendra solo los clientes que 
 									// coincidan con criterio de busqueda
 						// esta peticion redirige a otra pagina
 				titulo="Resultado de la búsqueda por nombre";
+				request.setAttribute("titulo", titulo);
+				rd = request.getRequestDispatcher("/jsp/listarTodos.jsp");
+				rd.forward(request, response);			
 				break;
-		}
-		// tengo que redirigir hacia una vista jsp para mostrar los clientes
-		RequestDispatcher rd;
-		// de alguna manera hay que enviarle a la vista el resultado de la consulta
-		// a la base de datos... 
-		
-		rd = request.getRequestDispatcher("/jsp/listarTodos.jsp");
-		request.setAttribute("iva", new Integer(21));
-		request.setAttribute("titulo", titulo);
-		rd.forward(request, response);
+		}	
 	}
 
 	/**
@@ -75,15 +77,18 @@ public class TiendaServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String action = request.getPathInfo().substring(1);
 		request.setCharacterEncoding("UTF-8");
+		RequestDispatcher rd;
 		switch(action){
 			case "altaCliente": // recuperar los datos tecleados en formulario
 				String nombre = request.getParameter("nombre");
-				String apellido = request.getParameter("Apellido");
+				String apellido = request.getParameter("apellido");
 				String dni = request.getParameter("dni");
 				Cliente cliente = new Cliente(0, nombre, apellido, dni);
 				// se invocara al controlador adecuado
 				DarAltaClienteControllerEjb controlador= new DarAltaClienteControllerEjb();
 				controlador.agregar(cliente);
+				rd = request.getRequestDispatcher("/index.html");
+				rd.forward(request, response);
 				break;
 			
 		}

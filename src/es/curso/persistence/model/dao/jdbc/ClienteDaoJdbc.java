@@ -1,45 +1,129 @@
 package es.curso.persistence.model.dao.jdbc;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import es.curso.model.Entity.Cliente;
 import es.curso.persistence.model.dao.ClienteDao;
 
 public class ClienteDaoJdbc implements ClienteDao{
-
-	private ArrayList<Cliente> clientes;
+	private Connection cx;
 	
 // constructor vacio	
 	public ClienteDaoJdbc() {
 		super();
-		clientes = new ArrayList<Cliente>();
+		
 	}
 
 	@Override
 	public void create(Cliente cliente) {
-		//instrucciones para conectar con la base de datos
-		// preparar la sentencia (sql) para agregar
-		// ejecutar la sentencia (sql) 
-		// cerrar la conexion
-		clientes.add(cliente);
+		try {
+			//instrucciones para conectar con la base de datos
+			// 1. abrir conexion
+			abrirConexion();
+			
+			// 2. preparar la sentencia (sql) para agregar
+			PreparedStatement ps= 
+				cx.prepareStatement	("INSERT INTO CLIENTE VALUES (?,?,?,?)");
+				// 2.1 Insertar los datos de cliente en los ?
+				ps.setInt(1, 0); // el id lo genera la base de datos automaticamente, ponemos 0 por poner algo
+				ps.setString(2, cliente.getNombre()); // nombre es Varchar en SQL, String para Java
+				ps.setString(3, cliente.getApellidos()); 
+				ps.setString(4, cliente.getDni());
+				
+			// 3. ejecutar la sentencia (sql) 
+				ps.executeUpdate(); // = dar al play en Heidi
+				// nota: se usa executeUpdate() para las instrucciones sql 
+				// como: insert delete update
+				// Esta instruccion devuelve como resultado el numero de registros
+				// (o filas) afectadas
+				
+				//3.1 Hacer Commit
+				
+			
+			
+		} catch (SQLException e) {			
+			e.printStackTrace();
+		}
 		
+		
+		finally{
+		// 4. cerrar la conexion
+		cerrarConexion();
+		}
 	}
 
 	@Override
-	public ArrayList<Cliente> findAll() {
+	public ArrayList<Cliente> findAll() {	
+		ArrayList<Cliente> clientes = new ArrayList<Cliente>();
+		try {
+			// 1. abrir la conexion
+			abrirConexion();
+			
+			// 2. preparar las sentencias
+			PreparedStatement ps= cx.prepareStatement("SELECT * FROM CLIENTE");
+			
+			// 3. ejecutar las sentencias
+			ResultSet consulta = ps.executeQuery();
+			
+			// 3.1 traspasar los datos de la respuesta al arrayList
+			while(consulta.next()){
+				Cliente clienteTemporal = new Cliente();
+				// codigo para traspasar de la consulta(resultSet) hacia el clienteTemporal
+				clienteTemporal.setId(consulta.getInt("id"));// lo que esta entre comillas es el nombre del atributo de la base de datos
+				clienteTemporal.setNombre(consulta.getString("nombre"));
+				clienteTemporal.setApellidos(consulta.getString("apellidos"));
+				clienteTemporal.setDni(consulta.getString("dni"));
+				
+				clientes.add(clienteTemporal);
+			}
+			
+				
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+		}
 		
-		clientes.add(new Cliente(1, "Jose", "Perez", "1242334G"));
-		clientes.add(new Cliente(2, "Joselito", "Suarez", "45235624G"));
-		clientes.add(new Cliente(3, "Josele", "Rodriguez", "8785454G"));
-		clientes.add(new Cliente(4, "Josefa", "Marquez", "7456745G"));
-		clientes.add(new Cliente(5, "Jose Luis", "Sanchez", "876546343G"));
-		clientes.add(new Cliente(6, "Jose María", "Ordoñez", "45235232G"));
-		clientes.add(new Cliente(7, "Jose Angel", "Juarez", "525232G"));
-		clientes.add(new Cliente(8, "Jose Antonio", "Perez", "213412341G"));
-		clientes.add(new Cliente(9, "Jose Javier", "Jimenez", "967845647G"));
-		clientes.add(new Cliente(10, "Jose Francisco", "Gimenez", "64534563G"));
 		
+		finally {
+		// 4. cerrar la conexion
 		return clientes;
+		}
 	}
 
+	private void abrirConexion(){
+		// 1. determinar y validar si tengo el driver o conector (de mysql)
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+		// 2. establecer conexion	
+			cx= DriverManager.getConnection(
+					"jdbc:mysql://localhost:3306/Tienda", // localizcion de base de datos
+					"rootTienda", // usuario
+					"rootTienda" // contraseña
+					);
+		// 3. Iniciar el autoCommit en false
+			// cx.setAutoCommit(false);
+		} catch (ClassNotFoundException e) {
+			
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void cerrarConexion(){
+		try {
+			if(cx!=null)
+			cx.close();
+		} catch (SQLException e) {			
+			e.printStackTrace();
+		}
+		
+	}
+	
 }
+
