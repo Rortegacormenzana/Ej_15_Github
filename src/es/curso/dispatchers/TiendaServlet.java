@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import es.curso.controllers.ejb.BuscarPorNombreControllerEjb;
 import es.curso.controllers.ejb.DarAltaClienteControllerEjb;
 import es.curso.controllers.ejb.ListarTodosControllerEjb;
 import es.curso.model.Entity.Cliente;
@@ -49,6 +50,12 @@ public class TiendaServlet extends HttpServlet {
 				//el resultado de la consulta a la base de datos... 
 				
 		switch(action){
+		
+			case "altaCliente": // se debe redirigir hacia el formulario altaCliente
+				rd= request.getRequestDispatcher("/html/altaClienteView.html");
+				rd.forward(request, response);
+				break;
+		
 			case "listarTodos": // se invocara al controlador adecuado
 							// esta peticion redirige a otra pagina
 				ListarTodosControllerEjb todos = new ListarTodosControllerEjb();
@@ -59,13 +66,8 @@ public class TiendaServlet extends HttpServlet {
 				rd = request.getRequestDispatcher("/jsp/listarTodos.jsp");
 				rd.forward(request, response);				
 				break;
-			case "buscarPorNombre": // se invocara al controlador que haga la consulta
-									// por nombre que obtendra solo los clientes que 
-									// coincidan con criterio de busqueda
-						// esta peticion redirige a otra pagina
-				titulo="Resultado de la búsqueda por nombre";
-				request.setAttribute("titulo", titulo);
-				rd = request.getRequestDispatcher("/jsp/listarTodos.jsp");
+			case "buscarPorNombre": // se redigira hacia el formulario buscar por nombre
+				rd = request.getRequestDispatcher("/jsp/buscarPorNombre.jsp");
 				rd.forward(request, response);			
 				break;
 		}	
@@ -78,6 +80,7 @@ public class TiendaServlet extends HttpServlet {
 		String action = request.getPathInfo().substring(1);
 		request.setCharacterEncoding("UTF-8");
 		RequestDispatcher rd;
+		
 		switch(action){
 			case "altaCliente": // recuperar los datos tecleados en formulario
 				String nombre = request.getParameter("nombre");
@@ -90,7 +93,23 @@ public class TiendaServlet extends HttpServlet {
 				rd = request.getRequestDispatcher("/index.html");
 				rd.forward(request, response);
 				break;
-			
+				
+			case "buscarPorNombre": // recuperar la cadena tecleada en el formulario
+				String cadenaNombre= request.getParameter("name");
+				
+				// llamar al controlador adecuado 
+				BuscarPorNombreControllerEjb controladorBusqueda= new BuscarPorNombreControllerEjb();
+				ArrayList<Cliente>resultado = controladorBusqueda.buscarPorNombre(cadenaNombre);
+				
+				// meter en el request el arraylist de respuesta
+				request.setAttribute("clientes",resultado);
+				
+				// mandarle un titulo diferente 
+				request.setAttribute("titulo","Búsqueda por " + cadenaNombre);
+				
+				// y redirigir hacia el jsp ListarTodos
+				rd= request.getRequestDispatcher("jsp/listarTodos.jsp");
+				rd.forward(request,response);
 		}
 	}
 

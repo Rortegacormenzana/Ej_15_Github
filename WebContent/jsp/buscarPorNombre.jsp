@@ -27,7 +27,7 @@
 </head>
 <body>
 
-   <form action="${pageContext.request.contextPath}/Tienda/buscarPorNombre" method="get" name="buscarPorNombre" enctype="text/html"> 
+   <form action="${pageContext.request.contextPath}/Tienda/buscarPorNombre" method="post" name="buscarPorNombre" enctype="text/html"> 
    <fieldset>
     <legend style="font-size: 1.3em">BUSCAR POR NOMBRE</legend>
    
