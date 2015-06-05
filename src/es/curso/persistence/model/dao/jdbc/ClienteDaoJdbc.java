@@ -124,6 +124,56 @@ public class ClienteDaoJdbc implements ClienteDao{
 		}
 		
 	}
+
+	@Override
+	public ArrayList<Cliente> searchByName(String name) {
+		ArrayList<Cliente> clientes = new ArrayList<Cliente>();
+		
+		try {
+			//1. establecer la conexion con la bbdd
+			abrirConexion();
+			
+			//2. preparar la sentencia sql parametrizada
+			PreparedStatement ps= cx.prepareStatement("SELECT * FROM CLIENTE WHERE nombre LIKE ?");
+			// 2.1 especificar lo que va en ?
+			ps.setString(1, "%" + name+"%");
+			
+			//3. ejecutar la query
+			ResultSet resultado = ps.executeQuery();
+			
+			// 3.1 pasar los datos que vienen de la bbdd (resultSet) hacia
+			// el ArrayList<Cliente>
+			while(resultado.next()){
+				Cliente c= new Cliente();
+					c.setId(resultado.getInt("id"));	
+					c.setNombre(resultado.getString("nombre"));
+					c.setApellidos(resultado.getString("apellidos"));
+					c.setDni(resultado.getString("dni"));
+				clientes.add(c);
+			}
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+		}
+		finally {
+		//4. cerrar la conexion (finally)
+			
+		}
+		return clientes;
+	}
+
+	@Override
+	public void update(Cliente cliente) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void delete(Integer id) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }
 
