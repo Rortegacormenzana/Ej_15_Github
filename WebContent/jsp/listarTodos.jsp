@@ -7,8 +7,9 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<title>Listar clientes</title>
 <link rel="stylesheet" href="../css/estilos.css">
+
 </head>
 <body>
     <h1><%= request.getAttribute("titulo") %></h1>
@@ -28,12 +29,17 @@
          <th>DNI</th>        
       </tr>
      <% for(Cliente c: clientes){ %>
-    	 <tr>
+        <form action="${pageContext.request.contextPath}/Tienda/eliminarPorId" method="post" name="eliminarPorId" distabled="disabled" enctype="text/html">
+    	 <tr id="<%= c.getId()%>"/>
+    	   <td><input type="text" name="id" value="<%= c.getId()%>"/></td>
     	   <td><%= c.getId() %></td>
     	   <td><%= c.getNombre() %></td>
     	   <td><%= c.getApellidos() %></td>
-    	   <td><%= c. getDni() %></td>    	   
+    	   <td><%= c. getDni() %></td>   
+    	   <td><input class="btnSinBordes" type="submit" value="Eliminar" 
+    	       name="btn<%= c.getId()%>"/></td> 	   
     	 </tr>
+        </form>
      <% } %>
      
      

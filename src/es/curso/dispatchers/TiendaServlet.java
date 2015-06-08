@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import es.curso.controllers.ejb.BuscarPorNombreControllerEjb;
 import es.curso.controllers.ejb.DarAltaClienteControllerEjb;
+import es.curso.controllers.EliminarController;
+import es.curso.controllers.ejb.EliminarControllerEjb;
 import es.curso.controllers.ejb.ListarTodosControllerEjb;
 import es.curso.model.Entity.Cliente;
 
@@ -70,6 +72,11 @@ public class TiendaServlet extends HttpServlet {
 				rd = request.getRequestDispatcher("/jsp/buscarPorNombre.jsp");
 				rd.forward(request, response);			
 				break;
+				
+			case "eliminarPorId": //
+				rd = request.getRequestDispatcher("/jsp/eliminarPorId.jsp");
+				rd.forward(request, response);
+				break;	
 		}	
 	}
 
@@ -108,8 +115,19 @@ public class TiendaServlet extends HttpServlet {
 				request.setAttribute("titulo","Búsqueda por " + cadenaNombre);
 				
 				// y redirigir hacia el jsp ListarTodos
-				rd= request.getRequestDispatcher("jsp/listarTodos.jsp");
+				rd= request.getRequestDispatcher("/jsp/listarTodos.jsp");
 				rd.forward(request,response);
+				
+			case "eliminarPorId": // recuperar el id tecleado en el formulario
+				int id = Integer.parseInt(request.getParameter("id"));
+				EliminarController eliminarEjb = new EliminarControllerEjb();	
+				eliminarEjb.eliminar(id);
+				
+				response.sendRedirect("listarTodos");				
+				break;
+				
+				
+				
 		}
 	}
 

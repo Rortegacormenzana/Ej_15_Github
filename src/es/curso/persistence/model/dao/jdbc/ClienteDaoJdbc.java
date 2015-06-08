@@ -171,9 +171,51 @@ public class ClienteDaoJdbc implements ClienteDao{
 
 	@Override
 	public void delete(Integer id) {
-		// TODO Auto-generated method stub
-		
+		try {
+			// 1. establecer conexion
+			abrirConexion();
+			// 2. preparar la sentencia
+			PreparedStatement ps = cx.prepareStatement("DELETE FROM cliente WHERE id= ?");
+			// 2.1 especificar lo que va en ?
+			ps.setInt(1, id);
+			//3. ejecutar la sentencia
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			// 4. cerrar la conexion
+			cerrarConexion();
+		}
 	}
+
+	@Override
+	public ArrayList<Cliente> searchById(Integer id) {
+		ArrayList<Cliente> clientes = new ArrayList<Cliente>();
+		
+		try {
+			//1. establecer la conexion con la bbdd
+			abrirConexion();
+			
+			//2. preparar la sentencia sql parametrizada
+			PreparedStatement ps= cx.prepareStatement("SELECT * FROM cliente WHERE id = ?");
+			// 2.1 especificar lo que va en ?
+			ps.setInteger(1, id);
+			
+			//3. ejecutar la query
+			ResultSet resultado = ps.executeQuery();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+		
+		return null;
+	}
+
+	
 	
 }
 

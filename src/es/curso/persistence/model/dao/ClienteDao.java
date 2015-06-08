@@ -13,7 +13,10 @@ public interface ClienteDao {
 	public ArrayList<Cliente> searchByName(String name);
 	
 	public void update(Cliente cliente);
-	
+		
 	public void delete(Integer id);
+	
+	public ArrayList<Cliente> searchById(Integer id);
+	
 
 }
