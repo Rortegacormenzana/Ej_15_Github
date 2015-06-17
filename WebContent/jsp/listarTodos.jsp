@@ -3,15 +3,28 @@
 <%@page import="java.time.LocalDateTime"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Listar clientes</title>
-<link rel="stylesheet" href="../css/estilos.css">
 
-</head>
-<body>
+<!--  header.jsp -->
+<%@ include file="../template/header.jsp" %>
+
+<script type="text/javascript">
+      function enviar(boton){
+         
+           var formulario= document.getElementById("formulario" +boton.name.substring(3));
+           // alterar el action según el botón pulsado
+            if(boton.value=="Actualizar")
+                formulario.action="${pageContext.request.contextPath}/Tienda/actualizar";
+            if(boton.value=="Eliminar")
+                    formulario.action=
+                        "${pageContext.request.contextPath}/Tienda/eliminarPorId";
+            formulario.submit();    
+      }
+    
+    
+    </script>
+
+
+
     <h1><%= request.getAttribute("titulo") %></h1>
    <!-- tabla html, dinamica -->
    
@@ -27,19 +40,26 @@
          <th>NOMBRE</th>
          <th>APELLIDOS</th>
          <th>DNI</th>        
-      </tr>
-     <% for(Cliente c: clientes){ %>
-        <form action="${pageContext.request.contextPath}/Tienda/eliminarPorId" method="post" name="eliminarPorId" distabled="disabled" enctype="text/html">
-    	 <tr id="<%= c.getId()%>"/>
-    	   <td><input type="text" name="id" value="<%= c.getId()%>"/></td>
-    	   <td><%= c.getId() %></td>
-    	   <td><%= c.getNombre() %></td>
-    	   <td><%= c.getApellidos() %></td>
-    	   <td><%= c. getDni() %></td>   
-    	   <td><input class="btnSinBordes" type="submit" value="Eliminar" 
-    	       name="btn<%= c.getId()%>"/></td> 	   
-    	 </tr>
-        </form>
+       </tr>
+        <%for(Cliente c: clientes){ %>  
+          <form id ="formulario<%= c.getId()%>" action="#"  method="post" onsubmit="return false;">
+          <tr id="<%= c.getId()%>">
+             <td><input type="text"  name="id" value ="<%= c.getId() %>" /></td>
+             <td><input type="text" name="nombre" value="<%= c.getNombre() %>"  /></td>
+             <td><input type="text" name="apellidos" value="<%= c.getApellidos() %>" /></td>
+             <td><input type="text" name="dni" value="<%= c.getDni() %>"/></td>
+               <td><input class="btnSinBordes" 
+                   type="submit" value="Eliminar"
+                     name="btn<%= c.getId()%>" onclick="enviar(this);"/> 
+               </td>
+               <td><input class="btnSinBordes" 
+                   type="submit" value="Actualizar"
+                     name="btn<%= c.getId()%>" onclick="enviar(this);"/> 
+               </td>
+              
+          </tr>
+    	 </form>
+    	 
      <% } %>
      
      
@@ -47,6 +67,6 @@
      
       <!--  las siguientes tr se construyen dinamicamente usando instrucciones java-->
    </table>
-
-</body>
-</html>
+   
+   <!--  footer.jsp -->
+<%@ include file="../template/footer.jsp" %>

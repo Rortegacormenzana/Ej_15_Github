@@ -16,3 +16,28 @@ td, th {
 	background: transparent; 
 	text-decoration: underline;
 }
+
+
+body {
+ background: #CEF6F5;
+ }
+ form {
+  
+  margin: 0 auto;
+  margin-top: 3em;
+  width: 50%;
+ }
+ .texto {
+   margin: .5em;   
+   margin-left: 1em;
+ }
+ .cuadro {
+   margin-left: 2em;
+   margin-bottom: 1.3em;
+ }
+ 
+ footer {
+    text-align: center;
+    font-weight: bold;
+    margin-top: 1em;
+ }

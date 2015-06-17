@@ -43,10 +43,17 @@ public class ClienteDaoJdbc implements ClienteDao{
 				// (o filas) afectadas
 				
 				//3.1 Hacer Commit
+				cx.commit();
 				
 			
 			
-		} catch (SQLException e) {			
+		} catch (SQLException e) {	
+			try {
+				cx.rollback();
+			} catch (Exception e1) {
+				
+				e1.printStackTrace();
+			}
 			e.printStackTrace();
 		}
 		
@@ -106,7 +113,7 @@ public class ClienteDaoJdbc implements ClienteDao{
 					"rootTienda" // contraseña
 					);
 		// 3. Iniciar el autoCommit en false
-			// cx.setAutoCommit(false);
+			cx.setAutoCommit(false);
 		} catch (ClassNotFoundException e) {
 			
 			e.printStackTrace();
@@ -163,9 +170,44 @@ public class ClienteDaoJdbc implements ClienteDao{
 		return clientes;
 	}
 
+	
+	
 	@Override
 	public void update(Cliente cliente) {
-		// TODO Auto-generated method stub
+		try {
+			// 1. establecer conexion
+			abrirConexion();
+			
+			// 2. preparar sentencia
+			PreparedStatement ps = cx.prepareStatement
+				("UPDATE cliente SET nombre=?, apellidos=?, dni=? WHERE id=?");
+			// 2.1 rellenar los ? interrogantes
+			ps.setString(1, cliente.getNombre());
+			ps.setString(2, cliente.getApellidos());
+			ps.setString(3, cliente.getDni());
+			ps.setInt(4, cliente.getId());
+		
+			// 3. ejecutar sentencia
+			ps.executeUpdate();
+			
+			// 3.1 hace commit
+			cx.commit();
+			
+		} catch (SQLException e) {
+			try {
+				cx.rollback();
+			} catch (SQLException e1) {
+				
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		}
+		
+		
+		finally {
+			// 4. cerrar conexion
+			cerrarConexion();
+		}
 		
 	}
 
@@ -174,13 +216,25 @@ public class ClienteDaoJdbc implements ClienteDao{
 		try {
 			// 1. establecer conexion
 			abrirConexion();
+			
 			// 2. preparar la sentencia
-			PreparedStatement ps = cx.prepareStatement("DELETE FROM cliente WHERE id= ?");
+			PreparedStatement ps = cx.prepareStatement
+				("DELETE FROM cliente WHERE id= ?");
 			// 2.1 especificar lo que va en ?
 			ps.setInt(1, id);
 			//3. ejecutar la sentencia
 			ps.executeUpdate();
+			
+			// 3.1 hace commit
+			cx.commit();
+			
 		} catch (SQLException e) {
+			try {
+				cx.rollback();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			e.printStackTrace();
 		}
 		finally {
@@ -189,31 +243,8 @@ public class ClienteDaoJdbc implements ClienteDao{
 		}
 	}
 
-	@Override
-	public ArrayList<Cliente> searchById(Integer id) {
-		ArrayList<Cliente> clientes = new ArrayList<Cliente>();
-		
-		try {
-			//1. establecer la conexion con la bbdd
-			abrirConexion();
-			
-			//2. preparar la sentencia sql parametrizada
-			PreparedStatement ps= cx.prepareStatement("SELECT * FROM cliente WHERE id = ?");
-			// 2.1 especificar lo que va en ?
-			ps.setInteger(1, id);
-			
-			//3. ejecutar la query
-			ResultSet resultado = ps.executeQuery();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
-		
-		
-		return null;
-	}
+	
+	
 
 	
 	

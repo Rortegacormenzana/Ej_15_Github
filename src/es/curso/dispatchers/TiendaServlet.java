@@ -10,13 +10,19 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import es.curso.controllers.ejb.ActualizarControllerEjb;
 import es.curso.controllers.ejb.BuscarPorNombreControllerEjb;
 import es.curso.controllers.ejb.DarAltaClienteControllerEjb;
+import es.curso.controllers.ejb.LoginControllerEjb;
+import es.curso.controllers.ActualizarController;
 import es.curso.controllers.EliminarController;
+import es.curso.controllers.LoginController;
 import es.curso.controllers.ejb.EliminarControllerEjb;
 import es.curso.controllers.ejb.ListarTodosControllerEjb;
 import es.curso.model.Entity.Cliente;
+import es.curso.model.Entity.Usuario;
 
 /**
  * Servlet implementation class TiendaServlet
@@ -54,7 +60,7 @@ public class TiendaServlet extends HttpServlet {
 		switch(action){
 		
 			case "altaCliente": // se debe redirigir hacia el formulario altaCliente
-				rd= request.getRequestDispatcher("/html/altaClienteView.html");
+				rd= request.getRequestDispatcher("/jsp/altaCliente.jsp");
 				rd.forward(request, response);
 				break;
 		
@@ -77,6 +83,11 @@ public class TiendaServlet extends HttpServlet {
 				rd = request.getRequestDispatcher("/jsp/eliminarPorId.jsp");
 				rd.forward(request, response);
 				break;	
+				
+			case "login": 				
+				rd = request.getRequestDispatcher("/login.jsp");
+				rd.forward(request, response);
+				break;
 		}	
 	}
 
@@ -97,12 +108,12 @@ public class TiendaServlet extends HttpServlet {
 				// se invocara al controlador adecuado
 				DarAltaClienteControllerEjb controlador= new DarAltaClienteControllerEjb();
 				controlador.agregar(cliente);
-				rd = request.getRequestDispatcher("/index.html");
+				rd = request.getRequestDispatcher("/index.jsp");
 				rd.forward(request, response);
 				break;
 				
 			case "buscarPorNombre": // recuperar la cadena tecleada en el formulario
-				String cadenaNombre= request.getParameter("name");
+				String cadenaNombre= request.getParameter("nombre");
 				
 				// llamar al controlador adecuado 
 				BuscarPorNombreControllerEjb controladorBusqueda= new BuscarPorNombreControllerEjb();
@@ -126,8 +137,49 @@ public class TiendaServlet extends HttpServlet {
 				response.sendRedirect("listarTodos");				
 				break;
 				
+			case "actualizar": // recuperar los datos que vienen del formulario
+				int idCliente = Integer.parseInt(request.getParameter("id"));
+				String nombreCliente = request.getParameter("nombre");
+				String apellidosCliente = request.getParameter("apellidos");
+				String dniCliente = request.getParameter("dni");
 				
+				// llamar al controlador
+				Cliente clienteModif = new Cliente (idCliente, nombreCliente, apellidosCliente, dniCliente);
+				ActualizarController actualizarEjb = new ActualizarControllerEjb();
 				
+				actualizarEjb.actualizar(clienteModif);
+				response.sendRedirect("listarTodos");	
+				break;
+				
+			case "login": 
+				// recuperar los datos que vienen del formulario
+				String userName = request.getParameter("userName");
+				String password = request.getParameter("password");
+				
+				// invocar al controlador adecuado
+				LoginController loginController = new LoginControllerEjb();
+				Usuario usuario = loginController.login(userName, password);
+				
+				// comprobar si el usuario existe o no existe en bbdd
+				if (usuario!=null){
+					// si el usuario existe meter los datos de usuario en la sesion
+					HttpSession session = request.getSession(false);
+					session = request.getSession(true);
+					
+					// aqui tengo que rellenar los datos del usuario
+					String nombreCompleto = usuario.getNombre() + " " + usuario.getApellidos();
+					session.setAttribute("nombreCompleto", nombreCompleto);
+					session.setAttribute("userName", usuario.getUserName());
+					// reenvio al index al obtener un login OK
+					rd = request.getRequestDispatcher("/index.jsp");
+					rd.forward(request, response);
+					
+				} 
+				else {
+					// si no existe redirigir hacia login de nuevo
+					response.sendRedirect("login");	
+				}
+				break;
 		}
 	}
 

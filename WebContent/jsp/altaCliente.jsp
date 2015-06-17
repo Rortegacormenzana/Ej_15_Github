@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Formulario Cliente</title>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
 
-</head>
-<body>
-  <form action="/Ej_15_Github/Tienda/altaCliente" method="post" enctype="text/html"> 
+<!--  header.jsp -->
+<%@ include file="../template/header.jsp" %>
+
+    <form action="${pageContext.request.contextPath}/Tienda/altaCliente" method="post" enctype="text/html"> 
   <fieldset>
   <legend style="font-size: 1.3em">ALTA CLIENTE</legend>
   
@@ -43,6 +41,5 @@
     </div>
     
   </form>
-
-</body>
-</html>
+  <!--  footer.jsp -->
+<%@ include file="../template/footer.jsp" %>

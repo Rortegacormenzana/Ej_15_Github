@@ -16,7 +16,7 @@ public interface ClienteDao {
 		
 	public void delete(Integer id);
 	
-	public ArrayList<Cliente> searchById(Integer id);
+	
 	
 
 }
